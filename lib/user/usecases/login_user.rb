@@ -11,7 +11,7 @@ module User
 
       def execute
         begin
-          user_hash = @user_repo.find_by_email(@email)
+          user_hash = @user_repo.find(email: @email)
           user = UserEntity.new(user_hash)
         rescue Base::Errors::NotFoundError
           raise ArgumentError

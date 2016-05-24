@@ -10,14 +10,14 @@ module User
     let(:user) { UserEntity.new(request[:user]) }
 
     it 'returns user if exists with auth_token' do
-      expect(user_repo).to receive(:find_by_auth_token).and_return(user)
+      expect(user_repo).to receive(:find).and_return(user)
 
       response = UseCases::GetCurrentUser.new(user_repo, request).execute
       expect(response.key?(:user)).to be true
     end
 
     it 'raises NotFoundError if auth_token doesn\'t matches' do
-      expect(user_repo).to receive(:find_by_auth_token).and_raise(Base::Errors::NotFoundError)
+      expect(user_repo).to receive(:find).and_raise(Base::Errors::NotFoundError)
 
       expect do
         UseCases::GetCurrentUser.new(user_repo, request).execute

@@ -11,7 +11,7 @@ module User
     let(:user_hash) { { email: email, password: pass } }
 
     it 'returns user if exists and password matches' do
-      expect(user_repo).to receive(:find_by_email).and_return(user_hash)
+      expect(user_repo).to receive(:find).and_return(user_hash)
 
       response = UseCases::LoginUser.new(user_repo, email, pass).execute
       expect(response.key?(:user)).to be true
@@ -19,7 +19,7 @@ module User
 
     it 'raises ArgumentError if password doesn\'t matches' do
       user_hash = { email: email, password: '1234' }
-      expect(user_repo).to receive(:find_by_email).and_return(user_hash)
+      expect(user_repo).to receive(:find).and_return(user_hash)
 
       expect do
         UseCases::LoginUser.new(user_repo, email, pass).execute
@@ -27,7 +27,7 @@ module User
     end
 
     it 'raises ArgumentError if user doesn\'t matches' do
-      expect(user_repo).to receive(:find_by_email).and_raise(Base::Errors::NotFoundError)
+      expect(user_repo).to receive(:find).and_raise(Base::Errors::NotFoundError)
 
       expect do
         UseCases::LoginUser.new(user_repo, email, pass).execute

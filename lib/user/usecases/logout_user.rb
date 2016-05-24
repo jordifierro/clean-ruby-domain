@@ -9,7 +9,7 @@ module User
       end
 
       def execute
-        user_hash = @user_repo.find_by_auth_token(@auth_token)
+        user_hash = @user_repo.find(auth_token: @auth_token)
         user = UserEntity.new(user_hash)
         begin
           user.regenerate_auth_token!

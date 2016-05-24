@@ -9,7 +9,7 @@ module User
       end
 
       def execute
-        { user: @user_repo.find_by_auth_token(@auth_token) }
+        { user: @user_repo.find(auth_token: @auth_token) }
       end
     end
   end
