@@ -7,7 +7,7 @@ module User
       end
 
       def execute
-        @user_repo.delete(@request[:user_id])
+        @user_repo.delete(@request[:user][:auth_token])
       end
     end
   end
