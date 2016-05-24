@@ -16,7 +16,7 @@ module User
         rescue Base::Errors::NotFoundError
           raise ArgumentError
         end
-        raise ArgumentError unless user.authenticate?(@password)
+        raise ArgumentError unless user.authenticate(@password)
         { user: user.to_hash } 
       end
     end

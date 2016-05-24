@@ -44,7 +44,7 @@ module User
       @password_hash = BCrypt::Engine.hash_secret(new_pass, @password_salt)
     end
 
-    def authenticate?(password)
+    def authenticate(password)
       @password_hash == BCrypt::Engine.hash_secret(password, @password_salt)
     end
 
