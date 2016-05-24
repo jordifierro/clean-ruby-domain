@@ -3,13 +3,13 @@ require 'base/errors/not_found_error'
 module User
   module UseCases
     class GetCurrentUser
-      def initialize(user_repo, request)
+      def initialize(user_repo, auth_token)
         @user_repo = user_repo
-        @request = request
+        @auth_token = auth_token
       end
 
       def execute
-        { user: @user_repo.find_by_auth_token(@request[:user][:auth_token]) }
+        { user: @user_repo.find_by_auth_token(@auth_token) }
       end
     end
   end

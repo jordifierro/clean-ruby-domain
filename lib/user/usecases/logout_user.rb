@@ -3,17 +3,18 @@ require 'base/errors/token_error'
 module User
   module UseCases
     class LogoutUser
-      def initialize(user_repo, request)
+      def initialize(user_repo, auth_token)
         @user_repo = user_repo
-        @request = request
+        @auth_token = auth_token
       end
 
       def execute
-        user = @user_repo.find_by_auth_token(@request[:user][:auth_token])
+        user_hash = @user_repo.find_by_auth_token(@auth_token)
+        user = UserEntity.new(user_hash)
         begin
           user.regenerate_auth_token!
           user.valid?
-          updated = @user_repo.save(user)
+          updated = @user_repo.save(user.to_hash)
         rescue Base::Errors::TokenError
         end until updated
         true

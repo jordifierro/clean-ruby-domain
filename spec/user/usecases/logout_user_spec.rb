@@ -5,44 +5,45 @@ require 'base/errors/token_error'
 
 module User
   describe UseCases::LogoutUser do
+    let(:token) { 'TOKEN' }
     let(:user_repo) { Object.new }
-    let(:user) { Object.new }
-    let(:request) { { user: { auth_token: 'TOKEN' } } }
+    let(:user_hash) { { email: 'email', password: '12345678', token: token } }
 
     it 'gets the user, updates its auth_token and saves it' do
-      expect(user).to receive(:regenerate_auth_token!).once
-      expect(user).to receive(:valid?).and_return(true).once
-      expect(user_repo).to receive(:find_by_auth_token).with('TOKEN').and_return(user)
+      expect_any_instance_of(UserEntity).to receive(:regenerate_auth_token!).twice
+      expect_any_instance_of(UserEntity).to receive(:valid?).and_return(true)
+      expect(user_repo).to receive(:find_by_auth_token).with(token).and_return(user_hash)
       expect(user_repo).to receive(:save).and_return(true)
 
-      UseCases::LogoutUser.new(user_repo, request).execute
+      UseCases::LogoutUser.new(user_repo, token).execute
     end
 
     it 'returns NotFound if user doesn\'t exists' do
-      expect(user_repo).to receive(:find_by_auth_token).with('TOKEN').and_raise(Base::Errors::NotFoundError)
+      expect(user_repo).to receive(:find_by_auth_token).with(token).and_raise(Base::Errors::NotFoundError)
 
       expect do
-        UseCases::LogoutUser.new(user_repo, request).execute
+        UseCases::LogoutUser.new(user_repo, token).execute
       end.to raise_error(Base::Errors::NotFoundError)
     end
 
     it 'repeats the regenerate_auth_token + save until successful save' do
-      expect(user).to receive(:regenerate_auth_token!).exactly(3).times
-      expect(user).to receive(:valid?).and_return(true).exactly(3).times
-      expect(user_repo).to receive(:find_by_auth_token).with('TOKEN').and_return(user)
+      expect_any_instance_of(UserEntity).to receive(:regenerate_auth_token!).exactly(4).times
+      expect_any_instance_of(UserEntity).to receive(:valid?).exactly(3).times.and_return(true)
+      expect(user_repo).to receive(:find_by_auth_token).with(token).and_return(user_hash)
       expect(user_repo).to receive(:save).and_raise(Base::Errors::TokenError).twice
       expect(user_repo).to receive(:save).and_return(true)
+      expect(user_repo).not_to receive(:save)
 
-      UseCases::LogoutUser.new(user_repo, request).execute
+      UseCases::LogoutUser.new(user_repo, token).execute
     end
 
     it 'returns true if success' do
-      expect(user).to receive(:regenerate_auth_token!)
-      expect(user).to receive(:valid?).and_return(true)
-      expect(user_repo).to receive(:find_by_auth_token).with('TOKEN').and_return(user)
+      expect_any_instance_of(UserEntity).to receive(:regenerate_auth_token!).twice
+      expect_any_instance_of(UserEntity).to receive(:valid?).and_return(true)
+      expect(user_repo).to receive(:find_by_auth_token).with(token).and_return(user_hash)
       expect(user_repo).to receive(:save).and_return(true)
 
-      response = UseCases::LogoutUser.new(user_repo, request).execute
+      response = UseCases::LogoutUser.new(user_repo, token).execute
       expect(response).to be true
     end
   end
