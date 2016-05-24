@@ -10,7 +10,7 @@ module Base
         const_set('DRY_VALIDATOR', Dry::Validation.Schema(&block))
         define_method('valid?') do
           valid = self.class.const_get('DRY_VALIDATOR').call(to_hash).success?
-          raise ArgumentError if !valid
+          raise ArgumentError unless valid
           return true
         end
       end
