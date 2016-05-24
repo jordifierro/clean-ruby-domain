@@ -10,7 +10,7 @@ module User
 
       def execute
         begin
-          user = @user_repo.get(@request[:user][:email])
+          user = @user_repo.find_by_email(@request[:user][:email])
         rescue Base::Errors::NotFoundError
           raise ArgumentError
         end
