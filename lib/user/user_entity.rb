@@ -3,6 +3,7 @@ require 'base/entity'
 
 module User
   class UserEntity < Base::Entity
+    attr_reader :id
     attr_reader :email
     attr_reader :password_salt
     attr_reader :password_hash
@@ -23,6 +24,7 @@ module User
     MAX_PASS_LENGTH = 72
 
     def initialize(hash)
+      @id = hash[:id]
       @email = hash[:email]
 
       @password_hash = hash[:password_hash]

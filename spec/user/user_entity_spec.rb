@@ -8,6 +8,7 @@ describe User::UserEntity do
 
   it 'returns corresponding attributes' do
     attrs = user.to_hash
+    expect(attrs.key?(:id)).to be true
     expect(attrs.key?(:email)).to be true
     expect(attrs.key?(:password)).to be false
     expect(attrs.key?(:password_hash)).to be true
@@ -18,6 +19,7 @@ describe User::UserEntity do
   end
 
   describe 'defines public methods' do
+    it { expect(user.respond_to?(:id)).to be true }
     it { expect(user.respond_to?(:email)).to be true }
     it { expect(user.respond_to?(:auth_token)).to be true }
     it { expect(user.respond_to?(:created_at)).to be true }
