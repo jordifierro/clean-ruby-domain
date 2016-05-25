@@ -2,7 +2,7 @@ require 'base/errors/token_error'
 
 module User
   module UseCases
-    class CreateUser
+    class Register
       def initialize(user_repo, user_hash)
         @user_repo = user_repo
         @user_hash = user_hash
@@ -10,13 +10,13 @@ module User
 
       def execute
         user = UserEntity.new(@user_hash)
-        user.valid?
         begin
           user.regenerate_auth_token!
-          created = @user_repo.save(user.to_hash)
+          user.valid?
+          created = @user_repo.create(user)
         rescue Base::Errors::TokenError
         end until created
-        { user: user.to_hash }
+        created
       end
     end
   end

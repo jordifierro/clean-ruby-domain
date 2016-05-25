@@ -2,7 +2,7 @@ require 'base/errors/not_found_error'
 
 module User
   module UseCases
-    class LoginUser
+    class Login
       def initialize(user_repo, email, password)
         @user_repo = user_repo
         @email = email
@@ -11,13 +11,12 @@ module User
 
       def execute
         begin
-          user_hash = @user_repo.find(email: @email)
-          user = UserEntity.new(user_hash)
+          user = @user_repo.get(email: @email)
         rescue Base::Errors::NotFoundError
           raise ArgumentError
         end
         raise ArgumentError unless user.authenticate(@password)
-        { user: user.to_hash } 
+        user
       end
     end
   end
