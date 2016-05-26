@@ -26,6 +26,8 @@ module User
       key(:password) { str? & size?(8..72) }
     end
 
+    tokenizes :auth_token
+
     def initialize(hash)
       @id = hash[:id]
       @email = hash[:email]
@@ -48,14 +50,8 @@ module User
     end
 
     def authenticate!(password)
-      if @password_hash != BCrypt::Engine.hash_secret(password, @password_salt)
-        raise Base::Errors::Authentication
-      end
-      true
-    end
-
-    def regenerate_auth_token!
-      @auth_token = SecureRandom.urlsafe_base64(nil, false)
+      return true if @password_hash == BCrypt::Engine.hash_secret(password, @password_salt)
+      raise Base::Errors::Authentication
     end
   end
 end

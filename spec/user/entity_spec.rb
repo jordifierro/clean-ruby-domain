@@ -154,5 +154,11 @@ describe User::Entity do
       user.regenerate_auth_token!
       expect(user.auth_token).not_to equal(old_token)
     end
+
+    it 'user SecureRandom' do
+      user
+      expect(SecureRandom).to receive(:urlsafe_base64).with(nil, false)
+      user.regenerate_auth_token!
+    end
   end
 end
