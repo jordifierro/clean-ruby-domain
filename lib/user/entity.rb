@@ -4,7 +4,7 @@ require 'base/errors'
 require 'securerandom'
 
 module User
-  class UserEntity < Base::Entity
+  class Entity < Base::Entity
     attr_reader :id
     attr_reader :email
     attr_reader :password_salt

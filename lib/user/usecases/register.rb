@@ -9,7 +9,7 @@ module User
       end
 
       def execute
-        user = UserEntity.new(@user_hash)
+        user = Entity.new(@user_hash)
         begin
           user.regenerate_auth_token!
           user.valid?

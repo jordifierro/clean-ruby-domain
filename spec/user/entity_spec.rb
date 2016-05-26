@@ -1,9 +1,9 @@
 require 'spec_helper'
-require 'user/user_entity'
+require 'user/entity'
 require 'base/errors'
 
-describe User::UserEntity do
-  let(:user) { User::UserEntity.new(email: 'email', password: '12345678') }
+describe User::Entity do
+  let(:user) { User::Entity.new(email: 'email', password: '12345678') }
 
   it { expect(user).to be_valid }
 
@@ -115,7 +115,7 @@ describe User::UserEntity do
 
   it 'sanitizes attributes' do
     params = { email: 'email', password: 'password', evil_attr: 'danger' }
-    user = User::UserEntity.new(params)
+    user = User::Entity.new(params)
     expect(user.instance_variable_defined?('@evil_attr')).to be false
     expect(user.respond_to?(:evil_attr)).to be false
     expect(user.to_hash.key?(:evil_attr)).to be false

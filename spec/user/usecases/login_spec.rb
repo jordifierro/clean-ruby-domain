@@ -1,6 +1,5 @@
 require 'spec_helper'
 require 'user/usecases/login'
-require 'user/user_entity'
 require 'base/errors'
 
 module User
