@@ -1,6 +1,7 @@
 require 'bcrypt'
 require 'base/entity'
 require 'base/errors'
+require 'securerandom'
 
 module User
   class UserEntity < Base::Entity
