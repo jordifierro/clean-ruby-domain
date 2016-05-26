@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'user/usecases/register'
 require 'user/user_entity'
-require 'base/errors/token_error'
+require 'base/errors'
 
 module User
   describe UseCases::Register do
@@ -17,7 +17,7 @@ module User
     end
 
     it 'repeats if TokenError' do
-      expect(user_repo).to receive(:create).with(instance_of(UserEntity)).and_raise(Base::Errors::TokenError)
+      expect(user_repo).to receive(:create).with(instance_of(UserEntity)).and_raise(Base::Errors::UsedToken)
       expect(user_repo).to receive(:create).with(instance_of(UserEntity)).and_return(user)
 
       UseCases::Register.new(user_repo, user_hash).execute

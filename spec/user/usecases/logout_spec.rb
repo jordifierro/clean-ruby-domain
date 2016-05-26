@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'user/usecases/logout'
-require 'base/errors/not_found_error'
-require 'base/errors/token_error'
+require 'base/errors'
 
 module User
   describe UseCases::Logout do
@@ -24,7 +23,7 @@ module User
       expect(user).to receive(:regenerate_auth_token!).twice
       expect(user).to receive(:valid?).twice
       expect(user_repo).to receive(:get).with(auth_token: token).and_return(user)
-      expect(user_repo).to receive(:save).with(user).and_raise(Base::Errors::TokenError)
+      expect(user_repo).to receive(:save).with(user).and_raise(Base::Errors::UsedToken)
       expect(user_repo).to receive(:save).with(user).and_return(true)
 
       UseCases::Logout.new(user_repo, token).execute

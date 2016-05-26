@@ -1,4 +1,4 @@
-require 'base/errors/not_found_error'
+require 'base/errors'
 
 module User
   module UseCases
@@ -12,10 +12,10 @@ module User
       def execute
         begin
           user = @user_repo.get(email: @email)
-        rescue Base::Errors::NotFoundError
-          raise ArgumentError
+        rescue Base::Errors::NotFound
+          raise Base::Errors::Authentication
         end
-        raise ArgumentError unless user.authenticate(@password)
+        user.authenticate!(@password)
         user
       end
     end

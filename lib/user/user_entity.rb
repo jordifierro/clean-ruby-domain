@@ -1,5 +1,6 @@
 require 'bcrypt'
 require 'base/entity'
+require 'base/errors'
 
 module User
   class UserEntity < Base::Entity
@@ -46,8 +47,11 @@ module User
       @password_hash = BCrypt::Engine.hash_secret(new_pass, @password_salt)
     end
 
-    def authenticate(password)
-      @password_hash == BCrypt::Engine.hash_secret(password, @password_salt)
+    def authenticate!(password)
+      if @password_hash != BCrypt::Engine.hash_secret(password, @password_salt)
+        raise Base::Errors::Authentication
+      end
+      true
     end
 
     def regenerate_auth_token!

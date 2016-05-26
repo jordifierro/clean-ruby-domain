@@ -1,4 +1,4 @@
-require 'base/errors/token_error'
+require 'base/errors'
 
 module User
   module UseCases
@@ -14,7 +14,7 @@ module User
           user.regenerate_auth_token!
           user.valid?
           created = @user_repo.create(user)
-        rescue Base::Errors::TokenError
+        rescue Base::Errors::UsedToken
         end until created
         created
       end

@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'user/user_entity'
+require 'base/errors'
 
 describe User::UserEntity do
   let(:user) { User::UserEntity.new(email: 'email', password: '12345678') }
@@ -27,7 +28,7 @@ describe User::UserEntity do
     it { expect(user.respond_to?(:password)).to be false }
     it { expect(user.respond_to?(:password_hash)).to be true }
     it { expect(user.respond_to?(:password_salt)).to be true }
-    it { expect(user.respond_to?(:authenticate)).to be true }
+    it { expect(user.respond_to?(:authenticate!)).to be true }
     it { expect(user.respond_to?(:regenerate_auth_token!)).to be true }
     it { expect(user.respond_to?(:password=)).to be true }
   end
@@ -120,30 +121,30 @@ describe User::UserEntity do
     expect(user.to_hash.key?(:evil_attr)).to be false
   end
 
-  describe 'authenticate(password) method' do
-    it { expect(user.authenticate('12345678')).to be true }
-    it { expect(user.authenticate('wrong_pass')).to be false }
+  describe 'authenticate!(password) method' do
+    it { expect(user.authenticate!('12345678')).to be true }
+    it { expect { user.authenticate!('wrong_pass') }.to raise_error(Base::Errors::Authentication) }
   end
 
   describe 'password=(new_password) method' do
     it 'sets a new password' do
       user.password = 'another_password'
-      expect(user.authenticate('another_password')).to be true
+      expect(user.authenticate!('another_password')).to be true
     end
 
     it 'validates min password length == 8' do
       expect { user.password = 'short' }.to raise_error(ArgumentError)
-      expect(user.authenticate('12345678')).to be true
+      expect(user.authenticate!('12345678')).to be true
     end
 
     it 'validates max password length == 72' do
       long_pass = ''
       73.times { long_pass << 'x' }
       expect { user.password = long_pass }.to raise_error(ArgumentError)
-      expect(user.authenticate('12345678')).to be true
+      expect(user.authenticate!('12345678')).to be true
 
       user.password = long_pass[0..71]
-      expect(user.authenticate(long_pass[0..71])).to be true
+      expect(user.authenticate!(long_pass[0..71])).to be true
     end
   end
 
