@@ -13,7 +13,7 @@ module User
     attr_reader :created_at
     attr_reader :updated_at
 
-    validate do
+    validates do
       key(:email).required(:str?)
       key(:password_hash).required(:str?)
       key(:password_salt).required(:str?)
@@ -22,8 +22,9 @@ module User
       key(:updated_at).required(:str?)
     end
 
-    MIN_PASS_LENGTH = 8
-    MAX_PASS_LENGTH = 72
+    validates :password do
+      key(:password) { str? & size?(8..72) }
+    end
 
     def initialize(hash)
       @id = hash[:id]
@@ -41,9 +42,7 @@ module User
     end
 
     def password=(new_pass)
-      if new_pass.length < MIN_PASS_LENGTH || new_pass.length > MAX_PASS_LENGTH
-        raise ArgumentError
-      end
+      password_valid?(password: new_pass)
       @password_salt = BCrypt::Engine.generate_salt
       @password_hash = BCrypt::Engine.hash_secret(new_pass, @password_salt)
     end

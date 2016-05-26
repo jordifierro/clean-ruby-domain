@@ -36,12 +36,12 @@ describe User::Entity do
   describe 'validates attributes' do
     it 'is not valid without email' do
       user.instance_variable_set('@email', nil)
-      expect { user.valid? }.to raise_error(ArgumentError)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
     end
 
     it 'email has to be a String' do
       user.instance_variable_set('@email', 1)
-      expect { user.valid? }.to raise_error(ArgumentError)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
 
       user.instance_variable_set('@email', 'email')
       expect(user.valid?).to be true
@@ -49,12 +49,12 @@ describe User::Entity do
 
     it 'is not valid without password_hash' do
       user.instance_variable_set('@password_hash', nil)
-      expect { user.valid? }.to raise_error(ArgumentError)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
     end
 
     it 'password_hash has to be a String' do
       user.instance_variable_set('@password_hash', 1)
-      expect { user.valid? }.to raise_error(ArgumentError)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
 
       user.instance_variable_set('@password_hash', 'HASH')
       expect(user.valid?).to be true
@@ -62,12 +62,12 @@ describe User::Entity do
 
     it 'is not valid without password_salt' do
       user.instance_variable_set('@password_salt', nil)
-      expect { user.valid? }.to raise_error(ArgumentError)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
     end
 
     it 'password_salt has to be a String' do
       user.instance_variable_set('@password_salt', 1)
-      expect { user.valid? }.to raise_error(ArgumentError)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
 
       user.instance_variable_set('@password_salt', 'SALT')
       expect(user.valid?).to be true
@@ -75,12 +75,12 @@ describe User::Entity do
 
     it 'is not valid without auth_token' do
       user.instance_variable_set('@auth_token', nil)
-      expect { user.valid? }.to raise_error(ArgumentError)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
     end
 
     it 'auth_token has to be a String' do
       user.instance_variable_set('@auth_token', 1)
-      expect { user.valid? }.to raise_error(ArgumentError)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
 
       user.instance_variable_set('@auth_token', 'TOKEN')
       expect(user.valid?).to be true
@@ -88,12 +88,12 @@ describe User::Entity do
 
     it 'is not valid without created_at' do
       user.instance_variable_set('@created_at', nil)
-      expect { user.valid? }.to raise_error(ArgumentError)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
     end
 
     it 'created_at has to be a String' do
       user.instance_variable_set('@created_at', Time.now)
-      expect { user.valid? }.to raise_error(ArgumentError)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
 
       user.instance_variable_set('@created_at', '12/08/2009')
       expect(user.valid?).to be true
@@ -101,12 +101,12 @@ describe User::Entity do
 
     it 'is not valid without updated_at' do
       user.instance_variable_set('@updated_at', nil)
-      expect { user.valid? }.to raise_error(ArgumentError)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
     end
 
     it 'updated_at has to be a String' do
       user.instance_variable_set('@updated_at', Time.now)
-      expect { user.valid? }.to raise_error(ArgumentError)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
 
       user.instance_variable_set('@updated_at', '12/03/2003')
       expect(user.valid?).to be true
@@ -133,14 +133,14 @@ describe User::Entity do
     end
 
     it 'validates min password length == 8' do
-      expect { user.password = 'short' }.to raise_error(ArgumentError)
+      expect { user.password = 'short' }.to raise_error(Base::Errors::BadParams)
       expect(user.authenticate!('12345678')).to be true
     end
 
     it 'validates max password length == 72' do
       long_pass = ''
       73.times { long_pass << 'x' }
-      expect { user.password = long_pass }.to raise_error(ArgumentError)
+      expect { user.password = long_pass }.to raise_error(Base::Errors::BadParams)
       expect(user.authenticate!('12345678')).to be true
 
       user.password = long_pass[0..71]

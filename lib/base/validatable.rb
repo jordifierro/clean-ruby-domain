@@ -5,12 +5,15 @@ module Base
     end
 
     module ClassMethods
-      def validate(&block)
+      def validates(name=nil, &block)
         require 'dry-validation'
-        const_set('DRY_VALIDATOR', Dry::Validation.Schema(&block))
-        define_method('valid?') do
-          valid = self.class.const_get('DRY_VALIDATOR').call(to_hash).success?
-          raise ArgumentError unless valid
+        scope = ''
+        scope = "#{name.to_s}_" if !name.nil?
+        const_set("#{scope.upcase}DRY_VALIDATOR", Dry::Validation.Schema(&block))
+        define_method("#{scope}valid?") do |hash=nil|
+          target = hash || to_hash
+          valid = self.class.const_get("#{scope.upcase}DRY_VALIDATOR").call(target).success?
+          raise Base::Errors::BadParams unless valid
           return true
         end
       end
