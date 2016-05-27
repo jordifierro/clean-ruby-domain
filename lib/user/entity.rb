@@ -14,6 +14,7 @@ module User
     attr_reader :created_at
     attr_reader :updated_at
     attr_reader :conf_asked_at
+    attr_reader :confirmed
 
     validates do
       key(:email).required(:str?)
@@ -23,6 +24,7 @@ module User
       key(:conf_token).required(:str?)
       key(:created_at).required(:str?)
       key(:updated_at).required(:str?)
+      key(:confirmed).required(:bool?)
     end
 
     validates :password do
@@ -43,12 +45,13 @@ module User
       token = hash[:auth_token]
       token ? @auth_token = token : regenerate_auth_token!
 
-      token = hash[:conf_token]
-      token ? @conf_token = token : regenerate_conf_token!
-
       @created_at = hash[:created_at] || Time.now.to_s
       @updated_at = hash[:updated_at] || Time.now.to_s
+
+      token = hash[:conf_token]
+      token ? @conf_token = token : regenerate_conf_token!
       @conf_asked_at = hash[:conf_asked_at]
+      @confirmed = hash[:confirmed] || false
     end
 
     def password=(new_pass)
@@ -64,6 +67,10 @@ module User
 
     def conf_asked!
       @conf_asked_at = Time.now
+    end
+    
+    def confirm!
+      @confirmed = true
     end
   end
 end

@@ -19,6 +19,7 @@ describe User::Entity do
     expect(attrs.key?(:updated_at)).to be true
     expect(attrs.key?(:conf_asked_at)).to be true
     expect(attrs.key?(:conf_token)).to be true
+    expect(attrs.key?(:confirmed)).to be true
   end
 
   describe 'defines public methods' do
@@ -36,6 +37,8 @@ describe User::Entity do
     it { expect(user.respond_to?(:regenerate_conf_token!)).to be true }
     it { expect(user.respond_to?(:conf_asked_at)).to be true }
     it { expect(user.respond_to?(:conf_asked!)).to be true }
+    it { expect(user.respond_to?(:confirmed)).to be true }
+    it { expect(user.respond_to?(:confirm!)).to be true }
   end
 
   describe 'validates attributes' do
@@ -129,6 +132,19 @@ describe User::Entity do
       user.instance_variable_set('@updated_at', '12/03/2003')
       expect(user.valid?).to be true
     end
+    
+    it 'is not valid without confirmed' do
+      user.instance_variable_set('@confirmed', nil)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
+    end
+
+    it 'confirmed has to be a boolean' do
+      user.instance_variable_set('@confirmed', Time.now)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
+
+      user.instance_variable_set('@confirmed', false)
+      expect(user.valid?).to be true
+    end
   end
 
   it 'sanitizes attributes' do
@@ -200,6 +216,13 @@ describe User::Entity do
     
       user.conf_asked!
       expect(user.conf_asked_at).to eq(Time.new(2000))
+    end
+  end
+
+  describe 'confirm! method' do
+    it 'sets confirmed to true' do
+      user.confirm!
+      expect(user.confirmed).to equal(true)
     end
   end
 end
