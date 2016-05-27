@@ -13,8 +13,7 @@ module User
       expect(user).to receive(:authenticate!).with(pass).and_return(true)
       expect(user_repo).to receive(:get).with(email: email).and_return(user)
 
-      response = UseCases::Login.new(user_repo, email, pass).execute
-      expect(response).to equal(user)
+      expect(UseCases::Login.new(user_repo, email, pass).execute).to equal(user)
     end
     
     it 'returns AuthenticationError if NotFoundError' do

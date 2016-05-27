@@ -15,8 +15,7 @@ module User
       expect(user_repo).to receive(:get).with(auth_token: token).and_return(user)
       expect(user_repo).to receive(:save).with(user).and_return(true)
 
-      response = UseCases::Logout.new(user_repo, token).execute
-      expect(response).to equal(true)
+      expect(UseCases::Logout.new(user_repo, token).execute).to equal(true)
     end
 
     it 'repeats if TokenError' do
@@ -26,7 +25,7 @@ module User
       expect(user_repo).to receive(:save).with(user).and_raise(Base::Errors::UsedToken)
       expect(user_repo).to receive(:save).with(user).and_return(true)
 
-      UseCases::Logout.new(user_repo, token).execute
+      expect(UseCases::Logout.new(user_repo, token).execute).to equal(true)
     end
   end
 end
