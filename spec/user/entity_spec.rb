@@ -17,6 +17,8 @@ describe User::Entity do
     expect(attrs.key?(:auth_token)).to be true
     expect(attrs.key?(:created_at)).to be true
     expect(attrs.key?(:updated_at)).to be true
+    expect(attrs.key?(:conf_asked_at)).to be true
+    expect(attrs.key?(:conf_token)).to be true
   end
 
   describe 'defines public methods' do
@@ -29,8 +31,11 @@ describe User::Entity do
     it { expect(user.respond_to?(:password_hash)).to be true }
     it { expect(user.respond_to?(:password_salt)).to be true }
     it { expect(user.respond_to?(:authenticate!)).to be true }
-    it { expect(user.respond_to?(:regenerate_auth_token!)).to be true }
     it { expect(user.respond_to?(:password=)).to be true }
+    it { expect(user.respond_to?(:regenerate_auth_token!)).to be true }
+    it { expect(user.respond_to?(:regenerate_conf_token!)).to be true }
+    it { expect(user.respond_to?(:conf_asked_at)).to be true }
+    it { expect(user.respond_to?(:conf_asked!)).to be true }
   end
 
   describe 'validates attributes' do
@@ -83,6 +88,19 @@ describe User::Entity do
       expect { user.valid? }.to raise_error(Base::Errors::BadParams)
 
       user.instance_variable_set('@auth_token', 'TOKEN')
+      expect(user.valid?).to be true
+    end
+
+    it 'is not valid without conf_token' do
+      user.instance_variable_set('@conf_token', nil)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
+    end
+
+    it 'conf_token has to be a String' do
+      user.instance_variable_set('@conf_token', 1)
+      expect { user.valid? }.to raise_error(Base::Errors::BadParams)
+
+      user.instance_variable_set('@conf_token', 'TOKEN')
       expect(user.valid?).to be true
     end
 
@@ -155,10 +173,33 @@ describe User::Entity do
       expect(user.auth_token).not_to equal(old_token)
     end
 
-    it 'user SecureRandom' do
+    it 'uses SecureRandom' do
       user
       expect(SecureRandom).to receive(:urlsafe_base64).with(nil, false)
       user.regenerate_auth_token!
+    end
+  end
+
+  describe 'regenerate_conf_token! method' do
+    it 'regenerates conf_token' do
+      old_token = user.conf_token
+      user.regenerate_conf_token!
+      expect(user.conf_token).not_to equal(old_token)
+    end
+
+    it 'uses SecureRandom' do
+      user
+      expect(SecureRandom).to receive(:urlsafe_base64).with(nil, false)
+      user.regenerate_conf_token!
+    end
+  end
+
+  describe 'conf_asked! method' do
+    it 'sets conf_asked_at variable' do
+      expect(Time).to receive(:now).at_least(3).and_return(Time.new(2000))
+    
+      user.conf_asked!
+      expect(user.conf_asked_at).to eq(Time.new(2000))
     end
   end
 end

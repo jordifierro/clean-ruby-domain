@@ -10,14 +10,17 @@ module User
     attr_reader :password_salt
     attr_reader :password_hash
     attr_reader :auth_token
+    attr_reader :conf_token
     attr_reader :created_at
     attr_reader :updated_at
+    attr_reader :conf_asked_at
 
     validates do
       key(:email).required(:str?)
       key(:password_hash).required(:str?)
       key(:password_salt).required(:str?)
       key(:auth_token).required(:str?)
+      key(:conf_token).required(:str?)
       key(:created_at).required(:str?)
       key(:updated_at).required(:str?)
     end
@@ -27,6 +30,7 @@ module User
     end
 
     tokenizes :auth_token
+    tokenizes :conf_token
 
     def initialize(hash)
       @id = hash[:id]
@@ -39,8 +43,12 @@ module User
       token = hash[:auth_token]
       token ? @auth_token = token : regenerate_auth_token!
 
+      token = hash[:conf_token]
+      token ? @conf_token = token : regenerate_conf_token!
+
       @created_at = hash[:created_at] || Time.now.to_s
       @updated_at = hash[:updated_at] || Time.now.to_s
+      @conf_asked_at = hash[:conf_asked_at]
     end
 
     def password=(new_pass)
@@ -52,6 +60,10 @@ module User
     def authenticate!(password)
       return true if @password_hash == BCrypt::Engine.hash_secret(password, @password_salt)
       raise Base::Errors::Authentication
+    end
+
+    def conf_asked!
+      @conf_asked_at = Time.now
     end
   end
 end
